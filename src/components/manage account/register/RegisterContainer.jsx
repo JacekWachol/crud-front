@@ -1,16 +1,49 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Navigation from '../../Navigation';
+import RegisterForm from './RegisterForm';
+
 
 class RegisterContainer extends Component {
-    render() {
-        return (
-            <div className="register">
-                <Navigation />
-                <p> register</p>
+    constructor(props) {
+        super(props);
+    }
 
-            </div>
-        )
+    render() {
+
+        if (!this.props.registerOutcome) {
+            return (
+                <div className="register">
+                    <Navigation />
+                    <h2> Register new account</h2>
+                    <RegisterForm />
+                </div>
+            );
+        }
+
+       
+
+        if (this.props.registerOutcome.error){
+            
+                return (
+                    <div className="register">
+                        <Navigation />
+                        <h2> Register new account</h2>
+                        <h3>Registration failed: {this.props.registerOutcome.errorType}</h3>
+                        <RegisterForm />
+                        
+                    </div>
+                );
+            
+        }
+
+      
+
     }
 }
 
-export default RegisterContainer;
+function mapStateToProps(state) {
+    return { registerOutcome: state.registerOutcome };
+}
+
+export default connect(mapStateToProps)(RegisterContainer);

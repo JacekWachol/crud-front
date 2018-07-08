@@ -1,28 +1,53 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchUsers } from '../../../actions/action_fetchUsers';
 import Navigation from '../../Navigation';
 
 class UsersContainer extends Component {
 
-  componentDidMount() {
-    axios.get('/api/v1/user').then((response) => {
-      response.data.map((account) => {
-        return console.log(account.email);
-      });
-    }).catch((error) => {
-      console.log(error);
-    });
+  constructor(props) {
+    super(props);
+
   }
 
-    render() {
-        return (
-            <div className="users">
-                <Navigation />
-                <p> User list</p>
+  componentDidMount() {
+    this.props.fetchUsers();
+  }
 
-            </div>
-        )
+  renderUsers(user) {
+    return (
+      <li key={user._id}>{user.email} </li>
+    );
+  }
+
+  render() {
+    if (!this.props.users) {
+      return (
+        <div>
+          <p>Loading</p>
+        </div>
+      );
     }
+    return (
+      <div className="users">
+        <Navigation />
+        <p> User list</p>
+        <ul>{this.props.users.map(this.renderUsers)}</ul>
+
+
+      </div>
+    );
+  }
 }
 
-export default UsersContainer;
+function mapStateToProps(state) {
+  return { users: state.users };
+}
+
+function mapDispatchToProps(dispatchFetchUsers) {
+  return bindActionCreators({ fetchUsers }, dispatchFetchUsers);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UsersContainer);
+
